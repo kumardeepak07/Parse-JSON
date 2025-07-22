@@ -1,27 +1,18 @@
 package jsonparser;
 
-import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.OPTIONS})
+import java.util.Map;
+
+@CrossOrigin(origins = "*")
 @RestController
 public class JsonController {
 
-    @RequestMapping(value = "/parse", 
-                    method = {RequestMethod.POST, RequestMethod.OPTIONS})
-    public ResponseEntity<String> parseJson(@RequestBody(required = false) String jsonInput) {
-        if ("OPTIONS".equalsIgnoreCase(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-                                        .getRequest().getMethod())) {
-            // return an empty OK for preflight
-            return ResponseEntity.ok().build();
-        }
-        try {
-            JsonParser parser = new JsonParser(jsonInput);
-            return ResponseEntity.ok(parser.parse().toString());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid JSON: " + e.getMessage());
-        }
+    @PostMapping("/parse")
+    public Map<String, Object> parseJson(@RequestBody String jsonStr) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(jsonStr, new TypeReference<Map<String, Object>>() {});
     }
 }

@@ -2,6 +2,7 @@ jsonparser\JsonArray.class
 jsonparser\JsonController.class
 jsonparser\JsonValue.class
 jsonparser\JsonParserApplication.class
+jsonparser\JsonController$1.class
 jsonparser\JsonNumber.class
 jsonparser\JsonString.class
 jsonparser\CorsConfig.class
