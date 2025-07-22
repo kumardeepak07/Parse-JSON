@@ -2,18 +2,23 @@ package jsonparser;
 
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", methods = {RequestMethod.POST, RequestMethod.OPTIONS})
 @RestController
 public class JsonController {
 
-    @PostMapping("/parse")
-    public String parseJson(@RequestBody String jsonInput) {
+    @RequestMapping(value = "/parse", 
+                    method = {RequestMethod.POST, RequestMethod.OPTIONS})
+    public ResponseEntity<String> parseJson(@RequestBody(required = false) String jsonInput) {
+        if ("OPTIONS".equalsIgnoreCase(((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                                        .getRequest().getMethod())) {
+            // return an empty OK for preflight
+            return ResponseEntity.ok().build();
+        }
         try {
             JsonParser parser = new JsonParser(jsonInput);
-            JsonValue result = parser.parse();
-            return result.toString();
+            return ResponseEntity.ok(parser.parse().toString());
         } catch (Exception e) {
-            return "Invalid JSON: " + e.getMessage();
+            return ResponseEntity.badRequest().body("Invalid JSON: " + e.getMessage());
         }
     }
 }
